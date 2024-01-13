@@ -53,7 +53,7 @@ def first_run():
         "message": "I'm here to help you with your daily life!", 
         "icon": "assets/rubyexplain.ico"},
     3: {"title": "Introduction!",
-        "message": "I am the avatar of WS2P, Windows Suicide Preventation Protocol",
+        "message": "I am the avatar of WS2P, Windows Suicide Prevention Protocol",
         "icon": "assets/rubyexplain.ico"},
     4:  {"title": "Introduction!",
         "message": "I will make sure it's my job that you remember that you're loved!",
