@@ -4,7 +4,7 @@ Windows Suicide Preventation Protocol, to stop you or anyone from suicides or ac
   <img width=300 height=300 src="https://github.com/Not-Baguette/WS2P/assets/94969176/3aab3df2-04aa-4567-8614-4498f8ae6683" alt="Ruby"/>
 </p>
 
-<sub>Current version: 1.0.2 Alpha [UNSTABLE]</sub>
+<sub>Current version: 1.0.3 Alpha [UNSTABLE]</sub>
 ## Features & Usage
 - Firewall any connections during a crisis
 - System tray icon
