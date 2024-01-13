@@ -4,9 +4,10 @@ Windows Suicide Preventation Protocol, to stop you or anyone from suicides or ac
   <img width=300 height=300 src="https://github.com/Not-Baguette/WS2P/assets/94969176/3aab3df2-04aa-4567-8614-4498f8ae6683" alt="Ruby"/>
 </p>
 
-<sub>Current version: 1.0.3 Alpha [UNSTABLE]</sub>
+<sub>Current version: 1.1.0 Beta [UNSTABLE]</sub>
 ## Features & Usage
 - Firewall any connections during a crisis
+- Some tampering checks
 - System tray icon
 - Friendly & Cute avatar <3
 - Browser checks
@@ -27,7 +28,7 @@ Before you run this, you must fulfill the compatibility (and requirements if you
 ### Compatibility (Before you run)
 - Windows 11 [Tested]
 - Windows 10 [Should be working fine too]
-Should also be running either `Chrome` or `Firefox` but other browsers should be easy to integrate
+Should also be running either `Chrome`, `chromium browsers (I.e. Cromite)` or `Firefox` but other browsers should be easy to integrate
 
 ### Requirements (For running via source code)
 For requirements, it should work with python 3.9 (theoritically) or up, but 3.12.0 is used for development. you can check [requirements.txt](https://github.com/Not-Baguette/WS2P/blob/main/requirements.txt) for required packages.
