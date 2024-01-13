@@ -44,9 +44,10 @@ def get_chrome_history():
 
                 # close the database connection
                 conn.close()
+                return True
     except Exception:  # NOQA
-        pass
-    
+        return False
+
 def get_firefox_history():
     try:
         if os.path.exists("C:\\temp\\.tempcache2.csv"):
@@ -87,8 +88,9 @@ def get_firefox_history():
 
                 # close the database connection
                 conn.close()
+                return True
     except Exception:  # NOQA
-        pass
+        return False
 
 def wipe_extra_data(browser, delete_before=2):
     browser = browser.lower().strip()
@@ -110,7 +112,7 @@ def wipe_extra_data(browser, delete_before=2):
         writer = csv.writer(file)
         writer.writerows(rows)
 
-def history_manual_check():
+def history_manual_check(chrome, firefox):
     # TODO: Maybe set it up so news websites wont block you
     red_set_website = set()
     yellow_set_website = set()
@@ -140,38 +142,40 @@ def history_manual_check():
         "red": [],
         "yellow": [],
     }
+    try:
+        def manage_status(csv_path, status_key, detected_key):
+            if detected_key not in config:
+                config[detected_key] = os.path.exists(csv_path)
+                with open("config.json", "w") as file:
+                    json.dump(config, file)
 
-    def manage_status(csv_path, status_key, detected_key):
-        if detected_key not in config:
-            config[detected_key] = os.path.exists(csv_path)
-            with open("config.json", "w") as file:
-                json.dump(config, file)
-
-        if config.get(detected_key):
-            if os.path.exists(csv_path):
-                with open(csv_path, "r", encoding="utf-8") as file:
-                    reader = csv.reader(file)
-                    rows = list(reader)
-                    if rows:
-                        report_dict[status_key] = 2
-                        for row in rows:
-                            parsed_uri = urlparse(row[0])
-                            domain = "{uri.netloc}".format(uri=parsed_uri).replace("www.", "")
-                            title = row[1].lower()
-                            if any(domain.startswith(keyword) for keyword in red_set_website):
-                                report_dict["red"].append(row)
-                            elif any(domain.startswith(keyword) for keyword in yellow_set_website):
-                                report_dict["yellow"].append(row)
-                            elif any(keyword in title for keyword in red_set_title):
-                                report_dict["red"].append(row)
-                            elif any(keyword in title for keyword in yellow_set_title):
-                                report_dict["yellow"].append(row)
-                    else:
-                        report_dict[status_key] = 1
+            if config.get(detected_key):
+                if os.path.exists(csv_path):
+                    with open(csv_path, "r", encoding="utf-8") as file:
+                        reader = csv.reader(file)
+                        rows = list(reader)
+                        if rows:
+                            report_dict[status_key] = 2
+                            for row in rows:
+                                parsed_uri = urlparse(row[0])
+                                domain = "{uri.netloc}".format(uri=parsed_uri).replace("www.", "")
+                                title = row[1].lower()
+                                if any(domain.startswith(keyword) for keyword in red_set_website):
+                                    report_dict["red"].append(row)
+                                elif any(domain.startswith(keyword) for keyword in yellow_set_website):
+                                    report_dict["yellow"].append(row)
+                                elif any(keyword in title for keyword in red_set_title):
+                                    report_dict["red"].append(row)
+                                elif any(keyword in title for keyword in yellow_set_title):
+                                    report_dict["yellow"].append(row)
+                        else:
+                            report_dict[status_key] = 1
+                else:
+                    report_dict[status_key] = 3
             else:
-                report_dict[status_key] = 3
-        else:
-            report_dict[status_key] = 0
+                report_dict[status_key] = 0
+    except Exception:  # NOQA
+        pass
 
     # Load the config file
     if os.path.exists("config.json"):
@@ -179,15 +183,24 @@ def history_manual_check():
             config = json.load(file)
     else:
         config = {}
-
-    manage_status("C:\\temp\\.tempcache.csv", "chrome_status", "chrome_detected")
-    manage_status("C:\\temp\\.tempcache2.csv", "firefox_status", "firefox_detected")
+    if chrome:
+        manage_status("C:\\temp\\.tempcache.csv", "chrome_status", "chrome_detected")
+        
+    if firefox:
+        manage_status("C:\\temp\\.tempcache2.csv", "firefox_status", "firefox_detected")
 
     return report_dict
 
 def regular_check(timeout=2):  # Timeout in minutes
-    get_chrome_history()
-    get_firefox_history()
-    wipe_extra_data("chrome", timeout)
-    wipe_extra_data("firefox", timeout)
-    return history_manual_check()  # Separated so it'd be easier to debug
+    try:
+        chrome = get_chrome_history()
+        wipe_extra_data("chrome", timeout)
+    except Exception:  # NOQA
+        pass
+    try:
+        firefox = get_firefox_history()
+        wipe_extra_data("firefox", timeout)
+    except Exception:  # NOQA
+        pass
+    
+    return history_manual_check(chrome, firefox)  # Separated so it'd be easier to debug
