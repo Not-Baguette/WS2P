@@ -13,9 +13,8 @@ import pystray
 
 check_every = 1  # Minutes
 blocktime = 20  # Minutes
-exceptions = ["open.spotify.com", "discord.com", "cdn.discordapp.com", "web.whatsapp.com", 
-              "media-cgk1-1.cdn.whatsapp.net", "media.tenor.com", "media.discordapp.net"
-              "discord-attachments-uploads-prd.storage.googleapis.com",]
+exceptions = ["*.spotify.com", "discord.com", "*.discordapp.com", "*.whatsapp.com", "media.tenor.com",
+              "discord-attachments-uploads-prd.storage.googleapis.com","*.spotifycdn.com", "*.jsdelivr.net"]
 
 def create_toast(title, message, icon, timeout=5):
     notification.notify(
