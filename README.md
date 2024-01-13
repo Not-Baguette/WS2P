@@ -53,6 +53,7 @@ pyinstaller -F -w --hidden-import "cryptography" --hidden-import "plyer.platform
 - Random chat topics
 - Affection level
 - Self-update
+- meow
 - And yes this is getting more similar to `DDLC: Monika After Story`
 
 ## Credits
