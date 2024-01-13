@@ -1,4 +1,4 @@
-import hashlib; import winreg; import shutil; import json; import time; import sys; import os; import ctypes; import random as rd
+import hashlib; import json; import time; import sys; import os; import ctypes; import random as rd
 import aes_implementation as aes
 import json_manage as jsonm
 from plyer import notification
@@ -14,7 +14,8 @@ import pystray
 check_every = 1  # Minutes
 blocktime = 20  # Minutes
 exceptions = ["open.spotify.com", "discord.com", "cdn.discordapp.com", "web.whatsapp.com", 
-              "media-cgk1-1.cdn.whatsapp.net", "media.tenor.com"]
+              "media-cgk1-1.cdn.whatsapp.net", "media.tenor.com", "media.discordapp.net"
+              "discord-attachments-uploads-prd.storage.googleapis.com",]
 
 def create_toast(title, message, icon, timeout=5):
     notification.notify(
