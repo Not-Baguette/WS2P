@@ -126,7 +126,12 @@ def tray_icon(run):
 
     def user_prompted_firewall():
         blocktime = pyautogui.prompt(text="How long do you want to block your internet access? (in minutes)", 
-                                     title="Ruby here!" , default="20")
+                                     title="Ruby here!" , default=20)
+        try:
+            blocktime = int(blocktime)
+        except:  # NOQA. incase user didnt put minutes there
+            create_toast("Ruby here!", "Invalid input, try again!", "assets/rubyalert.ico")
+            return
         if blocktime == None:
             create_toast("Ruby here!", "Operation Cancelled!", "assets/rubyalert.ico")
         else:
