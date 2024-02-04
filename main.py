@@ -88,19 +88,19 @@ def prompt_password():
     
     return hash
 
-def firewall_connection(exception_list, blocktime=20):  # Minutes
+def firewall_connection(exception_list, blocktime:int=20):  # Minutes
     exceptions = ";".join(exception_list)
     result = set_proxy_server("127.0.0.1", 8080, exceptions)
     if result != 0:
-        create_toast("Ruby here!", f"Failed to set the firewall: {str(result)}", "assets/rubyalert.ico")
+        create_toast("Ruby here!", f"Failed to set the firewall!", "assets/rubyalert.ico")
     else:
         create_toast("Ruby here!", "Successfully set the firewall!", "assets/rubyalert.ico")
 
-    time.sleep(blocktime * 60)
+    time.sleep(int(blocktime) * 60)
     
     result = disable_proxy_server()
     if result != 0:
-        create_toast("Ruby here!", f"Failed to disable the firewall: {str(result)}", "assets/rubyalert.ico")
+        create_toast("Ruby here!", f"Failed to disable the firewall!", "assets/rubyalert.ico")
     else:
         create_toast("Ruby here!", "Successfully disabled the firewall!", "assets/rubyalert.ico")
 
@@ -132,7 +132,7 @@ def tray_icon(run):
         else:
             try:
                 firewall_connection(exception_list=exceptions, blocktime=blocktime)
-                create_toast("Ruby here!", f"Firewall set for {blocktime} minutes!", "assets/rubysparkle.ico")
+                create_toast("Ruby here!", f"Firewall lifted!", "assets/rubysparkle.ico")
             except Exception as e:
                 create_toast("Ruby here!", f"Aaaa something went wrong: {e}", "assets/rubyalert.ico")
     

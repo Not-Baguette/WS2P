@@ -2,6 +2,7 @@ import shutil
 import os
 import sys
 import winreg
+import subprocess
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -17,18 +18,21 @@ def resource_path(relative_path):
 def insert_to_startup():
     # copy the file to C:\\Users\\{user}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\programs\\{FILE_NAME}
     PATH = sys.argv[0]
-    if not os.path.exists(
-            os.path.join(os.environ["USERPROFILE"], "AppData", "Roaming", "Microsoft", "Windows", "Start Menu",
-                         "programs")):
-        os.makedirs(os.path.join(os.environ["USERPROFILE"], "AppData", "Roaming", "Microsoft", "Windows", 
-                                 "Start Menu", "programs"))
+    target_path = os.path.join(os.environ["USERPROFILE"], "AppData", "Roaming", "Microsoft", "Windows", "Start Menu", "programs")
+    
+    if not os.path.exists(target_path):
+        os.makedirs(target_path)
+    
     # Incase the file is already in it, else copy it
     try:
-        shutil.copy(PATH,
-                    os.path.join(os.environ["USERPROFILE"], "AppData", "Roaming", "Microsoft", "Windows", 
-                                 "Start Menu", "programs"))
+        shutil.copy(PATH, target_path)
     except shutil.SameFileError:
-        pass
+        # Kill the task
+        subprocess.run(['taskkill', '/F', '/IM', os.path.basename(PATH)], check=True)
+        # Delete the file
+        os.remove(os.path.join(target_path, os.path.basename(PATH)))
+        # Copy the file again
+        shutil.copy(PATH, target_path)
 
     user = os.getlogin()
     # Check if it's run as .py or .exe
