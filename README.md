@@ -5,6 +5,9 @@ Windows Suicide Preventation Protocol, to stop you or anyone from suicides or ac
 </p>
 
 <sub>Current version: 1.1.1 Beta [UNSTABLE]</sub>
+## Information
+This project is currently halted due to a death.
+
 ## Features & Usage
 - Firewall any connections during a crisis
 - Some tampering checks
